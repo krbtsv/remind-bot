@@ -5,9 +5,7 @@ import json
 import settings
 
 bot_client = telebot.TeleBot(token=settings.BOT_TOKEN)
-"""
-Тестим новую ветку
-"""
+
 
 @bot_client.message_handler(commands=["start"])
 def start(message: Message):
@@ -24,6 +22,16 @@ def start(message: Message):
         json.dump(data_from_json, file_obj, indent=4, ensure_ascii=False)
 
     bot_client.reply_to(message=message, text=str(f"Вы зарегистрированы: {username}.\nВаш user_id: {user_id}"))
+
+
+def handle_about_day(message: Message):
+    bot_client.reply_to(message, 'Отлично! Ты хорошо потрудился!')
+
+
+@bot_client.message_handler(commands=["say_about_day"])
+def say_about_day(message: Message):
+    bot_client.reply_to(message, text='Привет! Чем сегодня занимался?')
+    bot_client.register_next_step_handler(message, callback=handle_about_day)
 
 
 bot_client.polling()
