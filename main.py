@@ -5,7 +5,9 @@ import json
 import settings
 
 bot_client = telebot.TeleBot(token=settings.BOT_TOKEN)
-
+"""
+Тестим новую ветку
+"""
 
 @bot_client.message_handler(commands=["start"])
 def start(message: Message):
