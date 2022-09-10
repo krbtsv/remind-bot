@@ -3,6 +3,8 @@ from telebot.types import Message
 import json
 
 import settings
+import requests
+from datetime import datetime
 
 bot_client = telebot.TeleBot(token=settings.BOT_TOKEN)
 
@@ -34,4 +36,8 @@ def say_about_day(message: Message):
     bot_client.register_next_step_handler(message, callback=handle_about_day)
 
 
-bot_client.polling()
+while True:
+    try:
+        bot_client.polling()
+    except Exception as err:
+        requests.post(settings.ERROR_MESSAGE + f'&text={datetime.now()} ::: {err.__class__} ::: {err}')
