@@ -3,6 +3,8 @@ from telebot.types import Message
 import json
 
 import settings
+import requests
+from datetime import datetime
 
 bot_client = telebot.TeleBot(token=settings.BOT_TOKEN)
 
@@ -24,4 +26,18 @@ def start(message: Message):
     bot_client.reply_to(message=message, text=str(f"Вы зарегистрированы: {username}.\nВаш user_id: {user_id}"))
 
 
-bot_client.polling()
+def handle_about_day(message: Message):
+    bot_client.reply_to(message, 'Отлично! Ты хорошо потрудился!')
+
+
+@bot_client.message_handler(commands=["say_about_day"])
+def say_about_day(message: Message):
+    bot_client.reply_to(message, text='Привет! Чем сегодня занимался?')
+    bot_client.register_next_step_handler(message, callback=handle_about_day)
+
+
+while True:
+    try:
+        bot_client.polling()
+    except Exception as err:
+        requests.post(settings.ERROR_MESSAGE + f'&text={datetime.now()} ::: {err.__class__} ::: {err}')
