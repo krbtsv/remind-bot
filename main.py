@@ -6,10 +6,20 @@ import settings
 import requests
 from datetime import datetime
 
-bot_client = telebot.TeleBot(token=settings.BOT_TOKEN)
+from telegram_client import TelegramClient
 
 
-@bot_client.message_handler(commands=["start"])
+class MyBot(telebot.TeleBot):
+    def __init__(self, telegram_client: TelegramClient, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.telegram_client = telegram_client
+
+
+telegram_client = TelegramClient(token=settings.BOT_TOKEN, base_url="https://api.telegram.org")
+bot = MyBot(token=settings.BOT_TOKEN, telegram_client=telegram_client)
+
+
+@bot.message_handler(commands=["start"])
 def start(message: Message):
     with open("users.json", "r") as file_obj:
         data_from_json = json.load(file_obj)
@@ -23,21 +33,26 @@ def start(message: Message):
     with open("users.json", "w") as file_obj:
         json.dump(data_from_json, file_obj, indent=4, ensure_ascii=False)
 
-    bot_client.reply_to(message=message, text=str(f"Вы зарегистрированы: {username}.\nВаш user_id: {user_id}"))
+    bot.reply_to(message=message, text=str(f"Вы зарегистрированы: {username}.\nВаш user_id: {user_id}"))
 
 
 def handle_about_day(message: Message):
-    bot_client.reply_to(message, 'Отлично! Ты хорошо потрудился!')
+    bot.reply_to(message, 'Отлично! Ты хорошо потрудился!')
 
 
-@bot_client.message_handler(commands=["say_about_day"])
+@bot.message_handler(commands=["say_about_day"])
 def say_about_day(message: Message):
-    bot_client.reply_to(message, text='Привет! Чем сегодня занимался?')
-    bot_client.register_next_step_handler(message, callback=handle_about_day)
+    bot.reply_to(message, text='Привет! Чем сегодня занимался?')
+    bot.register_next_step_handler(message, callback=handle_about_day)
+
+
+def create_err_message(err: Exception) -> str:
+    return f"{datetime.now()} ::: {err.__class__} ::: {err}"
 
 
 while True:
     try:
-        bot_client.polling()
+        bot.polling()
     except Exception as err:
-        requests.post(settings.ERROR_MESSAGE + f'&text={datetime.now()} ::: {err.__class__} ::: {err}')
+        bot.telegram_client.post(method="sendMessage", params={"chat_id": settings.ADMIN_CHAT_ID,
+                                                               "text": create_err_message(err)})
