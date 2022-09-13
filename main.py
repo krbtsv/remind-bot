@@ -3,10 +3,12 @@ from telebot.types import Message
 import json
 
 import settings
-import requests
 from datetime import datetime
 
 from telegram_client import TelegramClient
+
+BOT_TOKEN = settings.BOT_TOKEN
+ADMIN_CHAT_ID = settings.ADMIN_CHAT_ID
 
 
 class MyBot(telebot.TeleBot):
@@ -15,8 +17,8 @@ class MyBot(telebot.TeleBot):
         self.telegram_client = telegram_client
 
 
-telegram_client = TelegramClient(token=settings.BOT_TOKEN, base_url="https://api.telegram.org")
-bot = MyBot(token=settings.BOT_TOKEN, telegram_client=telegram_client)
+telegram_client = TelegramClient(token=BOT_TOKEN, base_url="https://api.telegram.org")
+bot = MyBot(token=BOT_TOKEN, telegram_client=telegram_client)
 
 
 @bot.message_handler(commands=["start"])
@@ -54,5 +56,5 @@ while True:
     try:
         bot.polling()
     except Exception as err:
-        bot.telegram_client.post(method="sendMessage", params={"chat_id": settings.ADMIN_CHAT_ID,
+        bot.telegram_client.post(method="sendMessage", params={"chat_id": ADMIN_CHAT_ID,
                                                                "text": create_err_message(err)})
