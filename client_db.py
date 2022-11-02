@@ -46,11 +46,3 @@ class UserActioner:
 
     def create_user(self, user_id: str, username: str, chat_id: int):
         self.database_client.execute_command(self.CREATE_USER, (user_id, username, chat_id))
-
-
-user_actioner = UserActioner(SQLiteClient("users.db"))
-user_actioner.setup()
-user = user_actioner.get_user("1")
-print(user)
-user_2 = {"user_id": 3, "username": "test", "chat_id": 11235}
-user_actioner.create_user(**user_2)
