@@ -1,11 +1,17 @@
+from logging import getLogger, StreamHandler
+
 import telebot
 from telebot.types import Message
 
 import settings
 from datetime import datetime
 
-from client_db import UserActioner, SQLiteClient
-from telegram_client import TelegramClient
+from clients.client_db import UserActioner, SQLiteClient
+from clients.telegram_client import TelegramClient
+
+logger = getLogger(__name__)
+logger.addHandler(StreamHandler())
+logger.setLevel("INFO")
 
 BOT_TOKEN = settings.BOT_TOKEN
 ADMIN_CHAT_ID = settings.ADMIN_CHAT_ID
@@ -19,6 +25,12 @@ class MyBot(telebot.TeleBot):
 
     def setup_resources(self):
         self.user_actioner.setup()
+
+    def shutdown_resources(self):
+        self.user_actioner.shutdown()
+
+    def shutdown(self):
+        self.shutdown_resources()
 
 
 telegram_client = TelegramClient(token=BOT_TOKEN, base_url="https://api.telegram.org")
@@ -58,7 +70,11 @@ def create_err_message(err: Exception) -> str:
 
 while True:
     try:
+        bot.setup_resources()
         bot.polling()
     except Exception as err:
+        error_message = create_err_message(err)
         bot.telegram_client.post(method="sendMessage", params={"chat_id": ADMIN_CHAT_ID,
-                                                               "text": create_err_message(err)})
+                                                               "text": error_message})
+        logger.error(error_message)
+        bot.shutdown()
