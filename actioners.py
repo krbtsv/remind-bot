@@ -1,3 +1,5 @@
+from datetime import date
+
 from clients.client_db import SQLiteClient
 
 
@@ -29,3 +31,6 @@ class UserActioner:
 
     def create_user(self, user_id: str, username: str, chat_id: int):
         self.database_client.execute_command(self.CREATE_USER, (user_id, username, chat_id))
+
+    def update_date(self, user_id: str, updated_date: date):
+        self.database_client.execute_command(self.UPDATE_LAST_DATE, (updated_date, user_id))

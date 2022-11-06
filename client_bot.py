@@ -4,9 +4,10 @@ import telebot
 from telebot.types import Message
 
 import settings
-from datetime import datetime
+from datetime import datetime, date
 
-from clients.client_db import UserActioner, SQLiteClient
+from actioners import UserActioner
+from clients.client_db import SQLiteClient
 from clients.telegram_client import TelegramClient
 
 logger = getLogger(__name__)
@@ -55,6 +56,8 @@ def start(message: Message):
 
 
 def handle_about_day(message: Message):
+    bot.user_actioner.update_date(user_id=str(message.from_user.id), updated_date=date.today())
+    bot.send_message(chat_id=ADMIN_CHAT_ID, text=f'Пользователь {message.from_user.username} говорит: {message.text}')
     bot.reply_to(message, 'Отлично! Ты хорошо потрудился!')
 
 
