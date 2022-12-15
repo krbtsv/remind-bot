@@ -1,7 +1,6 @@
-from logging import getLogger, StreamHandler
+from logging import StreamHandler, getLogger
 
 import settings
-
 from clients.client_db import SQLiteClient
 from clients.telegram_client import TelegramClient
 

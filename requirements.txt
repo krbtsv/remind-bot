@@ -1,9 +1,14 @@
 certifi==2022.6.15.1
 charset-normalizer==2.1.1
 environs==9.5.0
+flake8==6.0.0
 idna==3.3
+isort==5.11.2
 marshmallow==3.17.1
+mccabe==0.7.0
 packaging==21.3
+pycodestyle==2.10.0
+pyflakes==3.0.1
 pyparsing==3.0.9
 pyTelegramBotAPI==4.7.0
 python-dotenv==0.21.0

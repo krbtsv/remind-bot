@@ -1,7 +1,9 @@
-from logging import getLogger, StreamHandler
 
 import telebot
 from telebot.types import Message
+
+from logging import StreamHandler, getLogger
+
 
 import settings
 from datetime import datetime, date
